@@ -10,6 +10,7 @@ use App\Http\Controllers\guru\DashboardGuruController;
 use App\Http\Controllers\guru\ForumDiskusiGuruController;
 use App\Http\Controllers\guru\KontenGuruController;
 use App\Http\Controllers\guru\KuisGuruController;
+use App\Http\Controllers\guru\NilaiGuruController;
 use App\Http\Controllers\guru\SoalGuruController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\siswa\DashboardSiswaController;
@@ -109,6 +110,7 @@ Route::prefix('guru/kuis/{kuis}/soal')->name('guru.soal.')->group(function () {
 Route::get('guru/forum-diskusi', [ForumDiskusiGuruController::class, 'index'])->name('guru.forum_diskusi.index');
 Route::post('guru/forum-diskusi', [ForumDiskusiGuruController::class, 'store'])->name('guru.forum_diskusi.store');
 
+Route::get('guru/Nilai-siswa', [NilaiGuruController::class, 'index'])->name('guru.nilai_guru.index');
 
 //route siswa
 

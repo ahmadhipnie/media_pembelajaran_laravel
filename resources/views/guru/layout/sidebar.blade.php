@@ -85,6 +85,12 @@
                             <span>Forum Diskusi</span></a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('guru.nilai_guru.index') }}">
+                            <i class="fas fa-book"></i>
+                            <span>Nilai Siswa</span></a>
+                    </li>
+
 
 
                 <!-- Divider -->

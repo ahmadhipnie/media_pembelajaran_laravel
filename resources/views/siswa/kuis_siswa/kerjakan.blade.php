@@ -88,7 +88,11 @@ document.addEventListener('DOMContentLoaded', function () {
     btnCek.addEventListener('click', function () {
         const selected = form.querySelector('input[name="jawaban_id"]:checked');
         if (!selected) {
-            alert("Silakan pilih jawaban terlebih dahulu.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Pilih Jawaban!',
+                text: 'Silakan pilih jawaban terlebih dahulu.'
+            });
             return;
         }
 
@@ -102,11 +106,29 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(res => res.json())
         .then(res => {
-            alert(res.benar ? "Jawaban Anda BENAR!" : "Jawaban Anda SALAH!");
+            if(res.benar){
+                Swal.fire({
+                    title: 'Jawaban Anda BENAR!',
+                    imageUrl: '{{ asset('img/benar.jpeg') }}',
+                    imageWidth: 120,
+                    imageHeight: 120,
+                    imageAlt: 'Benar',
+                    confirmButtonText: 'Lanjut'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Jawaban Anda SALAH!',
+                    imageUrl: '{{ asset('img/salah.jpeg') }}',
+                    imageWidth: 120,
+                    imageHeight: 120,
+                    imageAlt: 'Salah',
+                    confirmButtonText: 'Lanjut'
+                });
+            }
             btnCek.disabled = true;
             btnNext.disabled = false;
         })
-        .catch(() => alert("Gagal mengecek jawaban."));
+        .catch(() => Swal.fire('Gagal', 'Gagal mengecek jawaban.', 'error'));
     });
 
     // Submit jawaban (Soal Selanjutnya)
