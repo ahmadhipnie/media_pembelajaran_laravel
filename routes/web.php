@@ -13,6 +13,7 @@ use App\Http\Controllers\guru\KuisGuruController;
 use App\Http\Controllers\guru\SoalGuruController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\siswa\DashboardSiswaController;
+use App\Http\Controllers\siswa\ForumDiskusiSiswaController;
 use App\Http\Controllers\siswa\KontenSiswaController;
 use App\Http\Controllers\siswa\KuisSiswaController;
 use App\Http\Controllers\SiswaController;
@@ -120,3 +121,10 @@ Route::get('siswa/kuis/{kuis}/hasil', [KuisSiswaController::class, 'hasil'])->na
 
 Route::get('siswa/kuis/{kuis}/riwayat', [KuisSiswaController::class, 'riwayat'])->name('siswa.kuis.riwayat');
 Route::post('siswa/kuis/{kuis}/ulang', [KuisSiswaController::class, 'ulang'])->name('siswa.kuis.ulang');
+
+
+Route::post('siswa/kuis/{kuis}/cek-jawaban', [KuisSiswaController::class, 'cekJawaban'])->name('siswa.kuis.cek_jawaban');
+Route::post('siswa/kuis/{kuis}/submit-jawaban', [KuisSiswaController::class, 'submitJawaban'])->name('siswa.kuis.submit_jawaban');
+
+Route::get('siswa/forum-diskusi', [ForumDiskusiSiswaController::class, 'index'])->name('siswa.forum_diskusi.index');
+Route::post('siswa/forum-diskusi', [ForumDiskusiSiswaController::class, 'store'])->name('siswa.forum_diskusi.store');

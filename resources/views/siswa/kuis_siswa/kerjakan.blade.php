@@ -43,79 +43,113 @@
                     </div>
                 @endforeach
             </div>
-            <button type="submit" class="btn btn-primary mt-2 float-right">Soal Selanjutnya</button>
+            <button type="button" id="btnCekJawaban" class="btn btn-info mt-2">Cek Jawaban</button>
+            <button type="submit" id="btnSoalSelanjutnya" class="btn btn-primary mt-2 float-right" disabled>Soal Selanjutnya</button>
         </form>
     </div>
 </div>
 @endsection
-
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Timer countdown
+document.addEventListener('DOMContentLoaded', function () {
     let sisa = {{ $sisa }};
+    let timerInterval;
+
+    // Fungsi update timer
     function updateTimer() {
         if (sisa <= 0) {
+            clearInterval(timerInterval);
             window.location.href = "{{ route('siswa.kuis.hasil', $kuis->id) }}";
-            return;
+        } else {
+            let m = Math.floor(sisa / 60);
+            let s = sisa % 60;
+            document.getElementById('timer').innerText = m + ':' + (s < 10 ? '0' + s : s);
+            sisa--;
         }
-        let m = Math.floor(sisa / 60);
-        let s = sisa % 60;
-        document.getElementById('timer').innerText = m + ' : ' + (s < 10 ? '0' : '') + s;
-        sisa--;
     }
-    updateTimer();
-    setInterval(updateTimer, 1000);
 
-    // Pilihan card highlight
-    document.querySelectorAll('.pilihan-jawaban').forEach(function(card){
-        card.addEventListener('click', function(){
-            document.querySelectorAll('.pilihan-jawaban').forEach(function(c){ c.classList.remove('border-primary'); });
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+
+    // Referensi elemen
+    const form = document.getElementById('formJawab');
+    const btnCek = document.getElementById('btnCekJawaban');
+    const btnNext = document.getElementById('btnSoalSelanjutnya');
+
+    // Pilihan highlight
+    form.querySelectorAll('.pilihan-jawaban').forEach(card => {
+        card.addEventListener('click', function () {
+            document.querySelectorAll('.pilihan-jawaban').forEach(c => c.classList.remove('border-primary'));
             card.classList.add('border-primary');
         });
     });
 
-    // Submit jawaban via AJAX
-    document.getElementById('formJawab').addEventListener('submit', function(e){
-        e.preventDefault();
-        let form = this;
-        let data = new FormData(form);
-        fetch("{{ route('siswa.kuis.jawab', $kuis->id) }}", {
+    // Tombol cek jawaban
+    btnCek.addEventListener('click', function () {
+        const selected = form.querySelector('input[name="jawaban_id"]:checked');
+        if (!selected) {
+            alert("Silakan pilih jawaban terlebih dahulu.");
+            return;
+        }
+
+        fetch("{{ route('siswa.kuis.cek_jawaban', $kuis->id) }}", {
             method: 'POST',
-            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `jawaban_id=${selected.value}`
+        })
+        .then(res => res.json())
+        .then(res => {
+            alert(res.benar ? "Jawaban Anda BENAR!" : "Jawaban Anda SALAH!");
+            btnCek.disabled = true;
+            btnNext.disabled = false;
+        })
+        .catch(() => alert("Gagal mengecek jawaban."));
+    });
+
+    // Submit jawaban (Soal Selanjutnya)
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        btnNext.disabled = true;
+
+        const data = new FormData(form);
+
+        fetch("{{ route('siswa.kuis.submit_jawaban', $kuis->id) }}", {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
             body: data
         })
         .then(res => res.json())
         .then(res => {
-            if(res.benar !== undefined){
-                alert(res.benar ? 'Jawaban Anda BENAR!' : 'Jawaban Anda SALAH!');
-            }
-            if(res.selesai){
-                window.location.href = res.redirect;
-            }else{
-                window.location.href = res.next;
-            }
+            window.location.href = res.selesai ? res.redirect : res.next;
         })
-        .catch(function(error){
-            alert('Terjadi kesalahan saat mengirim jawaban!');
+        .catch(() => {
+            alert("Terjadi kesalahan saat mengirim jawaban.");
+            btnNext.disabled = false;
         });
     });
 
-    // Jika browser ditutup, submit otomatis jawaban kosong
-    window.addEventListener('beforeunload', function (e) {
-        let radio = document.querySelector('input[name="jawaban_id"]:checked');
-        if (!radio) {
-            fetch("{{ route('siswa.kuis.jawab', $kuis->id) }}", {
+    // Auto-submit jawaban kosong saat menutup browser
+    window.addEventListener('beforeunload', function () {
+        const selected = form.querySelector('input[name="jawaban_id"]:checked');
+        if (!selected) {
+            fetch("{{ route('siswa.kuis.submit_jawaban', $kuis->id) }}", {
                 method: 'POST',
-                headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                body: new URLSearchParams({
-                    soal_id: '{{ $soal->id }}',
-                    jawaban_id: '', // kosong
-                    no: '{{ $no }}'
-                })
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `soal_id={{ $soal->id }}&jawaban_id=&no={{ $no }}`
             });
         }
     });
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 @endpush
+

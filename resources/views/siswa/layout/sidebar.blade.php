@@ -55,7 +55,7 @@
 
                 <!-- Nav Item - Dashboard -->
                 <li class="nav-item">
-                    <a class="nav-link" href="">
+                    <a class="nav-link" href="{{ route('siswa.dashboard') }}">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <span>Dashboard</span></a>
                     </li>
@@ -88,9 +88,9 @@
                     </div>
                 </li> --}}
                 <li class="nav-item">
-                    <a class="nav-link" href="">
+                    <a class="nav-link" href="{{ route('siswa.forum_diskusi.index') }}">
                         <i class="fas fa-users"></i>
-                        <span>Data Pelanggan</span></a>
+                        <span>Forum Diskusi</span></a>
                 </li>
 
 
