@@ -12,7 +12,7 @@
         <a href="{{ route('siswa.kuis.riwayat', $kuis->id) }}" class="btn btn-info mt-3">Lihat Riwayat Jawaban</a>
         <form action="{{ route('siswa.kuis.ulang', $kuis->id) }}" method="POST" class="d-inline">
             @csrf
-            <button type="submit" class="btn btn-warning mt-3" onclick="return confirm('Kerjakan ulang akan menghapus jawaban dan nilai sebelumnya. Lanjutkan?')">Kerjakan Ulang</button>
+            <button type="submit" class="btn btn-warning mt-3" onclick="return confirm('apakah anda yakin untuk mengerjakan ulang?. Lanjutkan?')">Kerjakan Ulang</button>
         </form>
         <a href="{{ route('siswa.konten.show', $kuis->konten_id) }}" class="btn btn-secondary mt-3">Kembali ke Konten</a>
     </div>
