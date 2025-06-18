@@ -131,10 +131,12 @@ class KuisSiswaController extends Controller
         $total = $kuis->soal->count();
         $nilai = $total > 0 ? round(($benar / $total) * 100) : 0;
 
-        Nilai::updateOrCreate(
-            ['siswa_id' => $siswaId, 'kuis_id' => $kuisId],
-            ['nilai' => $nilai]
-        );
+        // Selalu simpan nilai baru (riwayat)
+        Nilai::create([
+            'siswa_id' => $siswaId,
+            'kuis_id' => $kuisId,
+            'nilai' => $nilai
+        ]);
 
         session()->forget("kuis_{$kuis->id}_start");
 
@@ -150,7 +152,7 @@ class KuisSiswaController extends Controller
             ->where('siswa_id', $siswaId)
             ->delete();
 
-        Nilai::where('siswa_id', $siswaId)->where('kuis_id', $kuisId)->delete();
+        // Nilai lama tidak dihapus!
         session()->forget("kuis_{$kuis->id}_start");
 
         return redirect()->route('siswa.kuis.mulai', $kuisId);
